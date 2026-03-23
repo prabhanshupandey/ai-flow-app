@@ -25,7 +25,7 @@ function App() {
     setResponse("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/ask-ai", {
+      const res = await fetch("https://ai-flow-app-nz0f.onrender.com/api/ask-ai", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +106,7 @@ function App() {
   const saveData = async () => {
     if (!prompt || !response) return alert("Run flow first!");
 
-    await fetch("http://localhost:5000/api/save", {
+    await fetch("https://ai-flow-app-nz0f.onrender.com/api/save", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
