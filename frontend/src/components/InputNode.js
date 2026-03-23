@@ -96,7 +96,7 @@ const clearBtn = {
   fontSize: "14px",
   cursor: "pointer",
   padding: "4px 6px",
-  borderRadius: "6px",
+  borderRadius: "7px",
 };
 
 export default InputNode;
