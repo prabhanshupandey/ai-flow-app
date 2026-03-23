@@ -28,12 +28,12 @@ app.post("/api/ask-ai", async (req, res) => {
         messages: [{ role: "user", content: prompt }],
       },
       {
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "http://localhost:3000",
-          "X-Title": "AI Flow App",
-        },
+      headers: {
+  Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+  "Content-Type": "application/json",
+  "HTTP-Referer": "https://ai-flow-app-brown.vercel.app",
+  "X-Title": "AI Flow App",
+},
         timeout: 10000,
       }
     );
