@@ -1,149 +1,7 @@
-// const express = require("express");
-// const cors = require("cors");
-// const axios = require("axios");
-// require("dotenv").config();
-
-// const generateOTP = () => {
-//   return Math.floor(100000 + Math.random() * 900000).toString();
-// };
-
-// // 🔥 Supabase import
-// const { createClient } = require("@supabase/supabase-js");
-
-// const app = express();
-// app.use(cors());
-// app.use(express.json());
-
-// // 🔐 Supabase connect (yaha apni keys daalo)
-// const supabase = createClient(
-//   process.env.SUPABASE_URL,
-//   process.env.SUPABASE_KEY
-// );
-
-// // ✅ AI API + SAVE TO DB
-// app.post("/api/ask-ai", async (req, res) => {
-//   const { prompt, user_id, name } = req.body;
-
-//   try {
-//     const response = await axios.post(
-//       "https://openrouter.ai/api/v1/chat/completions",
-//       {
-//         model: "openrouter/auto",
-//         messages: [{ role: "user", content: prompt }],
-//       },
-//       {
-//         headers: {
-//           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-//           "Content-Type": "application/json",
-//           // "HTTP-Referer": "https://ai-flow-app-brown.vercel.app",
-//           "HTTP-Referer": "http://localhost:3000",
-//           "X-Title": "AI Flow App",
-//         },
-//       }
-//     );
-
-//   const reply = response.data.choices[0].message.content;
-
-// // 🔥 YAHAN YE CODE LAGANA HAI
-// const { error: dbError } = await supabase.from("flows").insert([
-//   {
-//     prompt,
-//     response: reply,
-//     user_id,
-//     name,
-//   },
-// ]);
-
-// if (dbError) {
-//   console.log("DB ERROR 👉", dbError);
-// }
-
-// res.json({ reply });
-
-//   } catch (error) {
-//     console.log("ERROR 👉", error.response?.data || error.message);
-//     res.status(500).json({ error: "AI failed" });
-//   }
-// });
-
-// // ✅ GET ALL DATA
-
-// app.get("/flows", async (req, res) => {
-//   const { data, error } = await supabase
-//     .from("flows")
-//     .select("*")
-//     .order("id", { ascending: false });
-
-//   if (error) {
-//     console.log(error);
-//     return res.send("Error ❌");
-//   }
-
-//   res.json(data);
-// });
-
-// // ✅ TEST
-// app.get("/", (req, res) => {
-//   res.send("Backend working 🚀");
-// });
-
-// // 🔥 PORT FIX
-// const PORT = process.env.PORT || 5000;
-
-// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
-
-// app.post("/api/send-otp", async (req, res) => {
-//   const { name, email } = req.body;
-
-//   const otp = generateOTP();
-
-//   const { error } = await supabase
-//     .from("users")
-//     .upsert([{ name, email, otp }]);
-
-//   if (error) {
-//     console.log("OTP ERROR:", error);
-//     return res.status(500).json({ success: false });
-//   }
-
-//   console.log("OTP 👉", otp); // 🔥 yahi se OTP milega
-
-//   res.json({ success: true });
-// });
-
-
-// app.post("/api/verify-otp", async (req, res) => {
-//   const { email, otp } = req.body;
-
-//   const { data, error } = await supabase
-//     .from("users")
-//     .select("*")
-//     .eq("email", email)
-//     .eq("otp", otp)
-//     .single();
-
-//  if (error || !data) {
-//     return res.status(400).json({
-//       success: false,
-//       message: "Invalid OTP",
-//     });
-//   }
-
-
-//   res.json({
-//     success: true,
-//     user: {
-//       id: data.id,
-//       name: data.name,
-//       email: data.email,
-//     },
-//   });
-// });
-
-
-
+const { Resend } = require("resend");
+const resend = new Resend(process.env.RESEND_API_KEY);
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
@@ -223,40 +81,80 @@ app.post("/api/ask-ai", async (req, res) => {
 // 🔐 SEND OTP
 // =======================
 
+// app.post("/api/send-otp", async (req, res) => {
+//   const { name, email } = req.body;
+
+//   const otp = generateOTP();
+// console.log("OTP 👉", otp);
+//   const { error } = await supabase
+//   .from("users")
+//   .upsert([{ name, email, otp }], { onConflict: "email" });52
+
+//   if (error) {
+//     console.log("OTP ERROR:", error);
+//     return res.status(500).json({ success: false });
+//   }
+
+
 app.post("/api/send-otp", async (req, res) => {
   const { name, email } = req.body;
 
-  const otp = generateOTP();
-console.log("OTP 👉", otp);
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  console.log("OTP 👉", otp);
+
   const { error } = await supabase
-  .from("users")
-  .upsert([{ name, email, otp }], { onConflict: "email" });52
+    .from("users")
+    .upsert([{ name, email, otp }], { onConflict: "email" });
 
   if (error) {
     console.log("OTP ERROR:", error);
     return res.status(500).json({ success: false });
   }
 
-const nodemailer = require("nodemailer");
-
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
-  // 🔥 EMAIL SEND
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "Your OTP Code",
-    text: `Your OTP is: ${otp}`,
-  });
+  try {
+    await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: email,
+      subject: "Your OTP Code",
+      html: `<h2>Your OTP is: ${otp}</h2>`,
+    });
+  } catch (err) {
+    console.log("EMAIL ERROR 👉", err);
+  }
 
   res.json({ success: true });
 });
+
+
+
+
+// const nodemailer = require("nodemailer");
+
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     user: process.env.EMAIL_USER,
+//     pass: process.env.EMAIL_PASS,
+//   },
+// });
+
+
+
+
+  // 🔥 EMAIL SEND
+//   await transporter.sendMail({
+//     from: process.env.EMAIL_USER,
+//     to: email,
+//     subject: "Your OTP Code",
+//     text: `Your OTP is: ${otp}`,
+//   });
+
+//   res.json({ success: true });
+// });
+
+
+
+
 
 // =======================
 // 🔐 VERIFY OTP (LOGIN)
