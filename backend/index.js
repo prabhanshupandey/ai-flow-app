@@ -151,9 +151,7 @@ require("dotenv").config();
 const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
-app.use(cors({
-  origin: "https://ai-flow-app-brown.vercel.app"
-}));
+app.use(cors());
 app.use(express.json());
 
 const supabase = createClient(
@@ -250,16 +248,16 @@ const transporter = nodemailer.createTransport({
 });
 
   // 🔥 EMAIL SEND
-try {
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to: email,
     subject: "Your OTP Code",
     text: `Your OTP is: ${otp}`,
   });
-} catch (err) {
-  console.log("EMAIL ERROR 👉", err);
-}
+
+  res.json({ success: true });
+});
+
 // =======================
 // 🔐 VERIFY OTP (LOGIN)
 // =======================
