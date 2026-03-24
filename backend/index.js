@@ -111,23 +111,23 @@ app.post("/api/send-otp", async (req, res) => {
     return res.status(500).json({ success: false });
   }
 
-  try {
-    await resend.emails.send({
-      from: "onboarding@resend.dev",
-      to: email,
-      subject: "Your OTP Code",
-      html: `<h2>Your OTP is: ${otp}</h2>`,
-    });
-  } catch (err) {
-    console.log("EMAIL ERROR 👉", err);
-  }
+  // 🔥 non-blocking email
+  resend.emails.send({
+    from: "onboarding@resend.dev",
+    to: email,
+    subject: "Your OTP Code",
+    html: `<h2>Your OTP is: ${otp}</h2>`,
+  })
+  .then(() => console.log("Email sent ✅"))
+  .catch(err => console.log("EMAIL ERROR 👉", err));
 
   res.json({ success: true });
 });
 
 
-
-
+if (!email || !name) {
+  return res.status(400).json({ success: false });
+}
 // const nodemailer = require("nodemailer");
 
 // const transporter = nodemailer.createTransport({
