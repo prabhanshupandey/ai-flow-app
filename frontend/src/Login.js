@@ -7,7 +7,6 @@ export default function Login({ setUser }) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  // ✅ SEND OTP
 const sendOTP = async () => {
   if (!name.trim() || !email.trim()) {
     alert("Please enter name and email ❌");
@@ -19,25 +18,34 @@ const sendOTP = async () => {
     return;
   }
 
-  // 🔥 STEP CHANGE FIRST (instant UI)
-  setStep(2);
-  setLoading(true);
-
   try {
-    await fetch("http://localhost:5000/api/send-otp", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, email }),
-    });
+    setLoading(true);
+
+  const BASE_URL = "https://ai-flow-app-nz0f.onrender.com";
+
+fetch(`${BASE_URL}/api/send-otp`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ name, email }),
+});
+
+    const data = await res.json();
+
+    if (data.success) {
+      setStep(2); // ✅ correct place
+    } else {
+      alert("Failed to send OTP ❌");
+    }
   } catch (err) {
-    console.log(err);
     alert("Server error ❌");
   } finally {
     setLoading(false);
   }
 };
+
+
 
   // ✅ VERIFY OTP
 const verifyOTP = async () => {
@@ -49,7 +57,7 @@ const verifyOTP = async () => {
   try {
     setLoading(true);
 
-    const res = await fetch("http://localhost:5000/api/verify-otp", {
+    const res = await fetch("https://ai-flow-app-nz0f.onrender.com/api/verify-otp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -68,7 +76,7 @@ const verifyOTP = async () => {
 
       // 🔥 NEW: fetch history
       const historyRes = await fetch(
-        `http://localhost:5000/api/history/${user.id}`
+        `https://ai-flow-app-nz0f.onrender.com/api/history/${user.id}`
       );
       const historyData = await historyRes.json();
 
