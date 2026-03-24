@@ -72,30 +72,6 @@ app.post("/api/ask-ai", async (req, res) => {
 
 
 
-// =======================
-// =======================
-
-
-
-// =======================
-// 🔐 SEND OTP
-// =======================
-
-// app.post("/api/send-otp", async (req, res) => {
-//   const { name, email } = req.body;
-
-//   const otp = generateOTP();
-// console.log("OTP 👉", otp);
-//   const { error } = await supabase
-//   .from("users")
-//   .upsert([{ name, email, otp }], { onConflict: "email" });52
-
-//   if (error) {
-//     console.log("OTP ERROR:", error);
-//     return res.status(500).json({ success: false });
-//   }
-
-
 app.post("/api/send-otp", async (req, res) => {
   const { name, email } = req.body;
 
@@ -128,33 +104,6 @@ app.post("/api/send-otp", async (req, res) => {
 if (!email || !name) {
   return res.status(400).json({ success: false });
 }
-// const nodemailer = require("nodemailer");
-
-// const transporter = nodemailer.createTransport({
-//   service: "gmail",
-//   auth: {
-//     user: process.env.EMAIL_USER,
-//     pass: process.env.EMAIL_PASS,
-//   },
-// });
-
-
-
-
-  // 🔥 EMAIL SEND
-//   await transporter.sendMail({
-//     from: process.env.EMAIL_USER,
-//     to: email,
-//     subject: "Your OTP Code",
-//     text: `Your OTP is: ${otp}`,
-//   });
-
-//   res.json({ success: true });
-// });
-
-
-
-
 
 // =======================
 // 🔐 VERIFY OTP (LOGIN)
