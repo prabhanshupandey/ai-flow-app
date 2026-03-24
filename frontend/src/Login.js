@@ -21,15 +21,13 @@ const sendOTP = async () => {
   try {
     setLoading(true);
 
-  const BASE_URL = "https://ai-flow-app-nz0f.onrender.com";
-
-fetch(`${BASE_URL}/api/send-otp`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({ name, email }),
-});
+    const res = await fetch(`https://ai-flow-app-nz0f.onrender.com/api/send-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email }),
+    });
 
     const data = await res.json();
 
