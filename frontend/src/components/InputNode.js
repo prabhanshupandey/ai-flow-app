@@ -1,3 +1,6 @@
+
+
+
 import React, { useRef, useEffect } from "react";
 import { Handle, Position } from "reactflow";
 
@@ -8,29 +11,36 @@ function InputNode({ data }) {
     textareaRef.current?.focus();
   }, []);
 
-const handleChange = (e) => {
-  data.setPrompt(e.target.value);
+  // ✅ AUTO RESIZE
+  const handleChange = (e) => {
+    data.setPrompt(e.target.value);
 
-  const el = textareaRef.current;
-  if (!el) return;
+    const el = textareaRef.current;
+    if (!el) return;
 
-  el.style.height = "auto";
+    el.style.height = "auto";
 
-  requestAnimationFrame(() => {
-    el.style.height = el.scrollHeight + "px";
-  });
-};
+    requestAnimationFrame(() => {
+      el.style.height = el.scrollHeight + "px";
+    });
+  };
+
   return (
     <div style={boxStyle}>
-      <h4 style={{ marginBottom: 8 }}>📝 Input</h4>
+      
+      {/* HEADER */}
+      <div style={headerStyle}>
+        <h4 style={{ margin: 0 }}>📝 Input</h4>
 
-         <button
+        <button
           onClick={() => data.setPrompt("")}
           style={clearBtn}
         >
           ✖
         </button>
+      </div>
 
+      {/* TEXTAREA */}
       <textarea
         ref={textareaRef}
         value={data.prompt}
@@ -40,7 +50,7 @@ const handleChange = (e) => {
             e.preventDefault();
             data.handleKeyDown(e);
 
-            // 🔥 focus maintain
+            // focus maintain
             setTimeout(() => {
               textareaRef.current?.focus();
             }, 0);
@@ -51,11 +61,11 @@ const handleChange = (e) => {
         style={inputStyle}
       />
 
-      {/* 🔥🔥 MOST IMPORTANT FIX */}
+      {/* CONNECTION HANDLE */}
       <Handle
         type="source"
         position={Position.Right}
-        style={{ background: "#6366f1" }}
+        style={handleStyle}
       />
     </div>
   );
@@ -63,32 +73,47 @@ const handleChange = (e) => {
 
 /* 🔥 STYLES */
 
+// ✅ Responsive box
 const boxStyle = {
-  padding: 15,
-  borderRadius: 14,
+  padding: "12px",
+  borderRadius: "14px",
   background: "linear-gradient(135deg,#1e293b,#0f172a)",
   color: "#fff",
-  width: 260,
+
+  width: "220px",   // ✅ FIXED WIDTH
+
   boxShadow: "0 0 20px rgba(0,0,0,0.6)",
   border: "1px solid #1e293b",
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
 };
 
+// ✅ header (title + clear btn)
+const headerStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+};
+
+// ✅ textarea responsive
 const inputStyle = {
   width: "100%",
   minHeight: "40px",
-  maxHeight: "250px",
+  maxHeight: "200px",
   overflowY: "auto",
   padding: "10px",
   borderRadius: "8px",
   border: "none",
   outline: "none",
   resize: "none",
-  fontSize: "15px",
+  fontSize: "14px",
   lineHeight: "1.5",
   background: "#020617",
   color: "#fff",
 };
 
+// ✅ clear button
 const clearBtn = {
   background: "transparent",
   border: "none",
@@ -97,6 +122,13 @@ const clearBtn = {
   cursor: "pointer",
   padding: "4px 6px",
   borderRadius: "7px",
+};
+
+// ✅ handle style
+const handleStyle = {
+  background: "#6366f1",
+  width: "10px",
+  height: "10px",
 };
 
 export default InputNode;
