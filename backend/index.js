@@ -71,9 +71,13 @@ app.post("/api/ask-ai", async (req, res) => {
 });
 
 
-
 app.post("/api/send-otp", async (req, res) => {
   const { name, email } = req.body;
+
+  // ✅ VALIDATION FIRST
+  if (!email || !name) {
+    return res.status(400).json({ success: false, message: "Name & Email required" });
+  }
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   console.log("OTP 👉", otp);
@@ -87,7 +91,7 @@ app.post("/api/send-otp", async (req, res) => {
     return res.status(500).json({ success: false });
   }
 
-  // 🔥 non-blocking email
+  // 🔥 NON-BLOCKING EMAIL
   resend.emails.send({
     from: "onboarding@resend.dev",
     to: email,
@@ -97,13 +101,9 @@ app.post("/api/send-otp", async (req, res) => {
   .then(() => console.log("Email sent ✅"))
   .catch(err => console.log("EMAIL ERROR 👉", err));
 
+  // ✅ FAST RESPONSE
   res.json({ success: true });
 });
-
-
-if (!email || !name) {
-  return res.status(400).json({ success: false });
-}
 
 // =======================
 // 🔐 VERIFY OTP (LOGIN)
