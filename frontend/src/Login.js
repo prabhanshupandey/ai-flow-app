@@ -6,6 +6,7 @@ export default function Login({ setUser }) {
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  
 
 const sendOTP = async () => {
   if (!name.trim() || !email.trim()) {
@@ -32,17 +33,18 @@ const sendOTP = async () => {
     const data = await res.json();
 
     if (data.success) {
-      setStep(2); // ✅ correct place
+      alert(`Your OTP is: ${data.otp} 🔐`); // ✅ FIXED
+      setStep(2); // ✅ IMPORTANT
     } else {
       alert("Failed to send OTP ❌");
     }
+
   } catch (err) {
     alert("Server error ❌");
   } finally {
     setLoading(false);
   }
 };
-
 
 
   // ✅ VERIFY OTP
@@ -73,10 +75,10 @@ const verifyOTP = async () => {
       setUser(user);
 
       // 🔥 NEW: fetch history
-      const historyRes = await fetch(
-        `https://ai-flow-app-nz0f.onrender.com/api/history/${user.id}`
-      );
-      const historyData = await historyRes.json();
+    const historyRes = await fetch(
+  `https://ai-flow-app-nz0f.onrender.com/api/history/${user.id}`
+);
+const historyData = await historyRes.json();
 
       // 👉 ye parent me bhejna hoga (important)
       if (window.setHistory) {
