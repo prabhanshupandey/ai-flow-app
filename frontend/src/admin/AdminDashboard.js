@@ -8,7 +8,7 @@ export default function AdminDashboard() {
   const [search, setSearch] = useState("");
 
   const fetchData = async () => {
-    const res = await fetch("http://ai-flow-app-nz0f.onrender.com/api/admin/history");
+    const res = await fetch("https://ai-flow-app-nz0f.onrender.com/api/admin/history");
     const data = await res.json();
     setUsers(data);
   };
@@ -16,7 +16,7 @@ export default function AdminDashboard() {
   const deleteUser = async (id) => {
     if (!window.confirm("Delete user?")) return;
 
-    await fetch(`http://ai-flow-app-nz0f.onrender.com/api/admin/user/${id}`, {
+    await fetch(`https://ai-flow-app-nz0f.onrender.com/api/admin/user/${id}`, {
       method: "DELETE",
     });
 

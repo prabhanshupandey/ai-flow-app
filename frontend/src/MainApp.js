@@ -52,7 +52,7 @@ const [nodes, setNodes] = useState([]);
   // ✅ LOAD HISTORY FROM DB (CORRECT PLACE)
 useEffect(() => {
   if (user) {
-    fetch(`http://ai-flow-app-nz0f.onrender.com/api/history/${user.id}`)
+    fetch(`https://ai-flow-app-nz0f.onrender.com/api/history/${user.id}`)
       .then((res) => res.json())
       .then((data) => {
         setHistory(data);
@@ -82,7 +82,7 @@ useEffect(() => {
     setResponse("");
 
     try {
-      const res = await fetch("http://ai-flow-app-nz0f.onrender.com/api/ask-ai", {
+      const res = await fetch("https://ai-flow-app-nz0f.onrender.com/api/ask-ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
 body: JSON.stringify({ prompt, user_id: user.id }),
@@ -170,7 +170,7 @@ useEffect(() => {
   const saveData = async () => {
     if (!prompt || !response) return alert("Run flow first!");
 
-    await fetch("http://ai-flow-app-nz0f.onrender.com/api/save", {
+    await fetch("https://ai-flow-app-nz0f.onrender.com/api/save", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -5,7 +5,7 @@ export default function AdminLogin({ setAdmin }) {
   const [password, setPassword] = useState("");
 
   const login = async () => {
-    const res = await fetch("http://ai-flow-app-nz0f.onrender.com/api/admin/login", {
+    const res = await fetch("https://ai-flow-app-nz0f.onrender.com/api/admin/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
