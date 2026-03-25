@@ -1,7 +1,14 @@
 
 
-const { Resend } = require("resend");
-const resend = new Resend(process.env.RESEND_API_KEY);
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
@@ -74,7 +81,6 @@ app.post("/api/ask-ai", async (req, res) => {
 app.post("/api/send-otp", async (req, res) => {
   const { name, email } = req.body;
 
-  // ✅ VALIDATION FIRST
   if (!email || !name) {
     return res.status(400).json({ success: false, message: "Name & Email required" });
   }
@@ -90,16 +96,20 @@ app.post("/api/send-otp", async (req, res) => {
     console.log("OTP ERROR:", error);
     return res.status(500).json({ success: false });
   }
-
   // 🔥 NON-BLOCKING EMAIL
-  resend.emails.send({
-    from: "onboarding@resend.dev",
+try {
+  await transporter.sendMail({
+    from: `"AI Flow" <${process.env.EMAIL_USER}>`,
     to: email,
     subject: "Your OTP Code",
-    html: `<h2>Your OTP is: ${otp}</h2>`,
-  })
-  .then(() => console.log("Email sent ✅"))
-  .catch(err => console.log("EMAIL ERROR 👉", err));
+    html: `<h2>Your OTP is: ${otp}</h2>`
+  });
+
+  console.log("Email sent ✅");
+} catch (err) {
+  console.log("EMAIL ERROR 👉", err);
+  return res.status(500).json({ success: false, message: "Email failed" });
+}
 
   // ✅ FAST RESPONSE
   res.json({ success: true });
