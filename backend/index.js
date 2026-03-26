@@ -1,7 +1,8 @@
 
-
+console.log("EMAIL_USER:", process.env.EMAIL_USER);
+console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
 const nodemailer = require("nodemailer");
-
+require("dotenv").config();
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
@@ -54,8 +55,8 @@ app.post("/api/ask-ai", async (req, res) => {
         headers: {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
-          // "HTTP-Referer": "http://localhost:3000",
-           "HTTP-Referer": "https://ai-flow-app-brown.vercel.app",
+          "HTTP-Referer": "http://localhost:3000",
+          //  "HTTP-Referer": "https://ai-flow-app-brown.vercel.app",
           "X-Title": "AI Flow App",
         },
       }
@@ -94,33 +95,36 @@ app.post("/api/send-otp", async (req, res) => {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   console.log("OTP 👉", otp);
 
+  // ⏳ 5 min expiry
+  const otp_expiry = new Date(Date.now() + 5 * 60 * 1000);
   const { error } = await supabase
     .from("users")
-    .upsert([{ name, email, otp }], { onConflict: "email" });
+    .upsert(
+      [{ name, email, otp, otp_expiry }],
+      { onConflict: "email" }
+    );
 
   if (error) {
     console.log("OTP ERROR:", error);
     return res.status(500).json({ success: false });
   }
-  // 🔥 NON-BLOCKING EMAIL
-try {
-  await transporter.sendMail({
-    from: `"AI Flow" <${process.env.EMAIL_USER}>`,
-    to: email,
-    subject: "Your OTP Code",
-    html: `<h2>Your OTP is: ${otp}</h2>`
-  });
 
-  console.log("Email sent ✅");
-} catch (err) {
-  console.log("EMAIL ERROR 👉", err);
-  return res.status(500).json({ success: false, message: "Email failed" });
-}
+  try {
+    await transporter.sendMail({
+      from: `"AI Flow" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Your OTP Code",
+      html: `<h2>Your OTP is: ${otp}</h2>`
+    });
 
-  // ✅ FAST RESPONSE
-  res.json({ success: true, otp });
+    console.log("Email sent ✅");
+  } catch (err) {
+    console.log("EMAIL ERROR 👉", err);
+    return res.status(500).json({ success: false, message: "Email failed" });
+  }
+
+  res.json({ success: true });
 });
-
 // =======================
 // 🔐 VERIFY OTP (LOGIN)
 // =======================
@@ -131,15 +135,39 @@ app.post("/api/verify-otp", async (req, res) => {
     .from("users")
     .select("*")
     .eq("email", email)
-    .eq("otp", otp)
     .single();
 
   if (error || !data) {
     return res.status(400).json({
       success: false,
+      message: "User not found",
+    });
+  }
+
+  // 🔐 OTP MATCH CHECK
+  if (data.otp !== otp) {
+    return res.status(400).json({
+      success: false,
       message: "Invalid OTP",
     });
   }
+
+  // ⏳ EXPIRY CHECK
+  const expiryTime = new Date(data.otp_expiry + "Z").getTime();
+  const currentTime = Date.now();
+
+  if (!data.otp_expiry || currentTime > expiryTime) {
+    return res.status(400).json({
+      success: false,
+      message: "OTP expired",
+    });
+  }
+
+  // 🔐 CLEAR OTP
+  await supabase
+    .from("users")
+    .update({ otp: null, otp_expiry: null })
+    .eq("email", email);
 
   res.json({
     success: true,
@@ -150,8 +178,6 @@ app.post("/api/verify-otp", async (req, res) => {
     },
   });
 });
-
-
 
 // =======================
 // ✅ TEST
@@ -266,3 +292,4 @@ app.delete("/api/admin/user/:id", async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
+
