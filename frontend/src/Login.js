@@ -32,12 +32,14 @@ const sendOTP = async () => {
 
     const data = await res.json();
 
-    if (data.success) {
-      alert(`Your OTP is: ${data.otp} 🔐`); // ✅ FIXED
-      setStep(2); // ✅ IMPORTANT
-    } else {
-      alert("Failed to send OTP ❌");
-    }
+if (data.success) {
+  if (data.otp) {
+    alert(`Your OTP is: ${data.otp}`);
+  }
+  setStep(2); // ✅ always go next
+} else {
+  alert("Failed to send OTP ❌");
+}
 
   } catch (err) {
     alert("Server error ❌");
@@ -74,19 +76,8 @@ const verifyOTP = async () => {
       localStorage.setItem("user", JSON.stringify(user));
       setUser(user);
 
-      // 🔥 NEW: fetch history
-    const historyRes = await fetch(
-  `https://ai-flow-app-nz0f.onrender.com/api/history/${user.id}`
-);
-const historyData = await historyRes.json();
-
-      // 👉 ye parent me bhejna hoga (important)
-      if (window.setHistory) {
-        window.setHistory(historyData);
-      }
-
     } else {
-      alert("Invalid OTP ❌");
+      alert(data.message || "Error ❌");
     }
   } catch (err) {
     alert("Server error ❌");
