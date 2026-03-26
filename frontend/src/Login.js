@@ -6,7 +6,7 @@ export default function Login({ setUser }) {
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  
+
 
 const sendOTP = async () => {
   if (!name.trim() || !email.trim()) {
